@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consistency Calendar</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="photo_2024-12-06_13-56-27.jpg" sizes="32x32" type="image/png" />
+  </head>
+  <body>
+    <section class="monthly_vision_board" id="visionBoard">
+      <!-- Plus signs will be displayed for each month -->
+
+      <div class="image" data-month="January">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="February">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="March">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="April">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="May">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="June">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="July">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="August">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="September">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="October">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="November">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+      <div class="image" data-month="December">
+        <div>
+          <i class="fas fa-plus" style="cursor: pointer"></i>
+        </div>
+      </div>
+    </section>
+    <section class="middle">
+      <div class="happit">
+        <h1 id="editableText">I will stick to this habit this year</h1>
+        <div id="editControls" style="display: none">
+          <button id="saveBtn">Save</button>
+          <button id="cancelBtn">Cancel</button>
+        </div>
+      </div>
+      <div class="calendar">
+        <div class="header">
+          <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+          <h2 id="monthYear"></h2>
+          <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div id="calendarBody" class="calendar-body"></div>
+        <div id="eventInputContainer" class="input-container"></div>
+      </div>
+
+      <div class="progress-bar">
+        <p>hepe you do will</p>
+        <div class="progress">
+          <div class="progress-fill" id="progressFill">
+            <span style="color: aquamarine">()</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <div>
+        <i class="fas fa-calendar-alt" id="calendarIcon"></i>
+      </div>
+      <div>
+        <i class="fas fa-sticky-note" id="noteIcon"></i>
+      </div>
+      <div>
+        <i class="fas fa-bell" id="notificationIcon"></i>
+      </div>
+      <div style="position: relative">
+        <i class="fas fa-palette" id="colorPaletteIcon"></i>
+        <input
+          type="color"
+          id="colorPicker"
+          style="position: absolute; left: 20px; top: 0; display: none"
+        />
+      </div>
+    </section>
+
+    <!-- Note Modal -->
+    <div id="noteModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeNoteModal">&times;</span>
+        <textarea
+          id="noteText"
+          placeholder="Write your note here..."
+        ></textarea>
+        <button id="saveNote">Save</button>
+        <button id="deleteNote">Delete</button>
+      </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeNotification">&times;</span>
+        <p id="notificationMessage"></p>
+      </div>
+    </div>
+
+    <!-- Image Popup Modal -->
+    <div id="imageModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeImageModal">&times;</span>
+
+        <div class="modal-options">
+          <button id="changeImage">Change Image</button>
+          <button id="deleteImage">Delete Image</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <ul>
+        <li>
+          <a
+            href="https://www.facebook.com/sharer/sharer.php?u=YOUR_TOOL_URL"
+            target="_blank"
+          >
+            <i class="fab fa-facebook"></i>
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://twitter.com/intent/tweet?url=YOUR_TOOL_URL&text=Check%20out%20this%20tool!"
+            target="_blank"
+          >
+            <i class="fab fa-twitter"></i>
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.instagram.com/?url=YOUR_TOOL_URL"
+            target="_blank"
+          >
+            <i class="fab fa-instagram"></i>
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://api.whatsapp.com/send?text=Check%20out%20this%20tool!%20YOUR_TOOL_URL"
+            target="_blank"
+          >
+            <i class="fab fa-whatsapp"></i>
+          </a>
+        </li>
+      </ul>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
