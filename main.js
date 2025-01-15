@@ -69,32 +69,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Event listeners for previous and next month buttons
   prevBtn.addEventListener("click", function () {
-    const today = new Date();
-    if (
-      currentYear > today.getFullYear() ||
-      (currentYear === today.getFullYear() && currentMonth > today.getMonth())
-    ) {
+    // Allow going back only within the current year
+    if (currentMonth > 0) {
       currentMonth--;
-      if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear--;
-      }
       renderCalendar();
     }
   });
 
   nextBtn.addEventListener("click", function () {
-    const today = new Date();
-    if (
-      currentYear < today.getFullYear() + 1 ||
-      (currentYear === today.getFullYear() + 1 &&
-        currentMonth < today.getMonth())
-    ) {
+    // Allow going forward only within the current year
+    if (currentMonth < 11) {
       currentMonth++;
-      if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear++;
-      }
       renderCalendar();
     }
   });
@@ -141,10 +126,58 @@ document.addEventListener("DOMContentLoaded", function () {
   // Show notification modal
   notificationIcon.addEventListener("click", function () {
     const newNotification = false; // Replace with actual logic to check for new notifications
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+    let notificationText = "";
+    let hasPreviousMonths = false; // Flag to check if there are previous months
+
+    // Get marked days for the current month
+    const markedDaysKeyCurrentMonth = `markedDays_${currentYear}_${currentMonth}`;
+    const markedDaysCurrentMonth =
+      JSON.parse(localStorage.getItem(markedDaysKeyCurrentMonth)) || [];
+    const daysClickedThisMonth = markedDaysCurrentMonth.length;
+
+    // Loop through the previous months of the current year
+    for (let monthOffset = 0; monthOffset < currentMonth; monthOffset++) {
+      const previousMonth = new Date(currentYear, monthOffset, 1);
+      const month = previousMonth.getMonth();
+      const markedDaysKey = `markedDays_${currentYear}_${month}`;
+      const markedDays = JSON.parse(localStorage.getItem(markedDaysKey)) || [];
+
+      // Calculate the percentage of marked days for the previous month
+      const totalDaysInPreviousMonth = new Date(
+        currentYear,
+        month + 1,
+        0
+      ).getDate();
+      const percentageMarked = (
+        (markedDays.length / totalDaysInPreviousMonth) *
+        100
+      ).toFixed(2);
+
+      // Get the month name
+      const monthName = previousMonth.toLocaleString("default", {
+        month: "long",
+      });
+
+      // Append the information to the notification text if there are marked days
+      if (markedDays.length > 0) {
+        notificationText += `في ${monthName} ${currentYear}، انت علمت ${markedDays.length} يوم. نسبة تقدمك كانت ${percentageMarked}%.<br>`;
+        hasPreviousMonths = true; // Set flag to true if there are marked days
+      }
+    }
+
     if (newNotification) {
-      notificationMessage.textContent = "You have a new notification!";
+      notificationMessage.textContent = "<b>عندك إشعار جديد<b>";
     } else {
-      notificationMessage.textContent = "No new notifications. ";
+      if (hasPreviousMonths) {
+        notificationMessage.innerHTML = notificationText; // Use innerHTML to allow line breaks
+      } else {
+        notificationMessage.textContent =
+          "هنا هتشوف تقدمك في الشهور اللي فاتت.";
+      }
+      // Show the number of days clicked for the current month
+      notificationMessage.innerHTML += `<hr><br>في الشهر الحالي، انت انجزت ${daysClickedThisMonth} ايام.`;
     }
     notificationModal.style.display = "block";
   });
@@ -316,6 +349,20 @@ document.addEventListener("DOMContentLoaded", function () {
     ".calendar, .progress-bar, h1"
   );
 
+  // Load saved color from localStorage on page load
+  const savedColor = localStorage.getItem("selectedColor");
+  if (savedColor) {
+    elementsToColor.forEach((element) => {
+      element.style.backgroundColor = savedColor;
+    });
+    colorPicker.value = savedColor; // Set the color picker to the saved color
+  } else {
+    // Apply the default CSS color if no color is saved
+    elementsToColor.forEach((element) => {
+      element.style.backgroundColor = ""; // This will use the CSS default
+    });
+  }
+
   colorPaletteIcon.addEventListener("click", function (event) {
     // Show the color picker
     colorPicker.style.display = "block";
@@ -328,6 +375,8 @@ document.addEventListener("DOMContentLoaded", function () {
     elementsToColor.forEach((element) => {
       element.style.backgroundColor = selectedColor;
     });
+    // Save the selected color to localStorage
+    localStorage.setItem("selectedColor", selectedColor);
   });
 
   // Hide the color picker when clicking anywhere else on the document
@@ -346,8 +395,27 @@ document.addEventListener("DOMContentLoaded", function () {
   const progressPercentage = document.querySelector(".progress-bar span");
   const motivationText = document.querySelector(".progress-bar p");
 
-  // Load marked days from localStorage
-  const markedDays = JSON.parse(localStorage.getItem(markedDaysKey)) || [];
+  // Function to get the key for the current month
+  function getMarkedDaysKey() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    return `markedDays_${year}_${month}`;
+  }
+
+  // Function to load marked days for the current month
+  function loadMarkedDays() {
+    const markedDaysKey = getMarkedDaysKey();
+    return JSON.parse(localStorage.getItem(markedDaysKey)) || [];
+  }
+
+  // Function to save marked days for the current month
+  function saveMarkedDays(markedDays) {
+    const markedDaysKey = getMarkedDaysKey();
+    localStorage.setItem(markedDaysKey, JSON.stringify(markedDays));
+  }
+
+  // Load marked days from localStorage on page load
+  let markedDays = loadMarkedDays();
 
   // Function to update the progress bar based on the percentage of marked days relative to days passed
   function updateProgressBar() {
@@ -398,7 +466,6 @@ document.addEventListener("DOMContentLoaded", function () {
       day.classList.add("marked");
     }
   });
-
   days.forEach((day) => {
     day.addEventListener("click", function () {
       const dayNumber = parseInt(this.textContent, 10);
@@ -408,12 +475,18 @@ document.addEventListener("DOMContentLoaded", function () {
         dayNumber
       );
 
+      // Check if the dayNumber is null or invalid
+      if (dayNumber === null || isNaN(dayNumber)) {
+        alert("ده مش يوم تبع الشهر");
+        return; // Exit the function if the day is null
+      }
+
       if (selectedDate > currentDate) {
-        alert("This day is in the future.");
+        alert("عملتها ازاي في المستقبل لسة اليوم ما جاش");
       } else {
         this.classList.toggle("marked");
 
-        // Update marked days in localStorage
+        // Update marked days in the array
         if (this.classList.contains("marked")) {
           markedDays.push(dayNumber);
         } else {
@@ -422,7 +495,8 @@ document.addEventListener("DOMContentLoaded", function () {
             markedDays.splice(index, 1);
           }
         }
-        localStorage.setItem(markedDaysKey, JSON.stringify(markedDays));
+        // Save the updated marked days to localStorage
+        saveMarkedDays(markedDays);
 
         // Update the marked days counter and progress bar whenever a day is marked/unmarked
         updateMarkedDaysCounter();
@@ -447,3 +521,11 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+
+// Function to clear marked days from localStorage
+function clearMarkedDays() {
+  localStorage.removeItem("markedDays");
+}
+
+// Call this function to clear marked days when needed
+clearMarkedDays();

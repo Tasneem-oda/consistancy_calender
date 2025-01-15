@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap");
+
 * {
   margin: 0;
   padding: 0;
@@ -17,12 +19,17 @@ body {
   font-family: "Cairo", sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
+  font-size: 16px;
+  line-height: 1.5;
 }
 h1 {
   font-size: 30px;
   text-shadow: 1px 1px 10px #8a8a8a;
   direction: rtl;
   unicode-bidi: isolate; /* Ensures only the text's direction is affected */
+  font-family: "Cairo", sans-serif;
+  margin: 0;
+  padding: 0;
 }
 h1,
 h2,
@@ -31,10 +38,16 @@ h4,
 h5,
 h6 {
   color: var(--primary-color);
+  font-family: "Cairo", sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 p {
   color: var(--primary-color);
+  font-family: "Cairo", sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 a {
@@ -141,7 +154,7 @@ h1 {
 }
 
 .progress-bar .progress-fill {
-  height: 15px;
+  height: 20px;
   background: linear-gradient(to right, #000000, #858585);
   box-shadow: 1px 1px 10px #444;
 }
@@ -184,7 +197,7 @@ footer ul li {
 }
 
 .calendar {
-  max-width: 400px;
+  width: 300px;
   margin: 0 auto;
 }
 
@@ -333,6 +346,8 @@ input {
 }
 
 /* Responsive Styles */
+@media (max-width: 900px) {
+}
 @media (max-width: 768px) {
   .monthly_vision_board {
     width: 80%;
@@ -378,6 +393,4 @@ input {
   .controls i {
     text-shadow: 1px 1px 5px #33333365, -1px -1px 5px #0000005c;
   }
-}
-@media (max-width: 480px) {
 }
