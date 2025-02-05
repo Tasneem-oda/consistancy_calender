@@ -3,15 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="تقويم الالتزام لمساعدتك على متابعة عاداتك اليومية وتحقيق أهدافك." />
+    <meta name="keywords" content="تقويم, عادات, أهداف, تنظيم, إنتاجية" />
+    <meta name="author" content="مطور البرمجيات" />
     <title>Consistency Calendar</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
+
+    <!-- وسوم Open Graph لتحسين مشاركة الروابط على وسائل التواصل -->
+    <meta property="og:title" content="تقويم الالتزام - تابع عاداتك اليومية" />
+    <meta property="og:description" content="ساعد نفسك على تحقيق أهدافك اليومية ومتابعة عاداتك مع تقويم الالتزام." />
+    <meta property="og:image" content="https://consistancycalender.netlify.app/photo_2024-12-06_13-56-27.jpg" />
+    <meta property="og:url" content="https://consistancycalender.netlify.app" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ar_AR" />
+
+    <!-- وسوم Twitter Card لتحسين مشاركة الروابط على تويتر -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="تقويم الالتزام - راقب عاداتك وحقق أهدافك" />
+    <meta name="twitter:description" content="التزم بعاداتك اليومية بسهولة مع تقويم الالتزام. تابع تقدمك اليوم!" />
+    <meta name="twitter:image" content="https://consistancycalender.netlify.app/photo_2024-12-06_13-56-27.jpg" />
+    <meta name="twitter:site" content="@Tasneem42532994" /> <!-- عدل هذا إذا كان لديك حساب تويتر رسمي -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="photo_2024-12-06_13-56-27.jpg" sizes="32x32" type="image/png" />
-  </head>
+</head>
+
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-36NJ6BS61F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-36NJ6BS61F');
+</script>
   <body>
     <section class="monthly_vision_board" id="visionBoard">
       <!-- Plus signs will be displayed for each month -->
@@ -110,10 +136,15 @@
         <i class="fas fa-calendar-alt" id="calendarIcon"></i>
       </div>
       <div>
-        <i class="fas fa-sticky-note" id="noteIcon"></i>
+        <i class="fa-solid fa-bag-shopping" id="noteIcon"></i>
       </div>
       <div>
         <i class="fas fa-bell" id="notificationIcon"></i>
+      </div>
+      <div>
+        <a href="use.html"
+          ><i style="color: black" class="fa-solid fa-address-card"></i
+        ></a>
       </div>
       <div style="position: relative">
         <i class="fas fa-palette" id="colorPaletteIcon"></i>
@@ -131,7 +162,7 @@
         <span class="close" id="closeNoteModal">&times;</span>
         <textarea
           id="noteText"
-          placeholder="Write your note here..."
+          placeholder="Write your whys here..."
         ></textarea>
         <button id="saveNote">Save</button>
         <button id="deleteNote">Delete</button>
@@ -157,8 +188,15 @@
         </div>
       </div>
     </div>
+    <!-- Guide Section -->
+    <div id="guide" class="hidden">
+      <div id="highlight"></div>
+      <p id="message"></p>
+      <button id="next">Next</button>
+      <button id="stop">Stop</button>
+    </div>
 
-    <footer>
+    <footer id="shareIcon">
       <ul>
         <li>
           <a

@@ -67,21 +67,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
   renderCalendar();
 
+  // Function to update the month and render the calendar
+  function updateMonth(increment) {
+    if (
+      (increment < 0 && currentMonth > 0) ||
+      (increment > 0 && currentMonth < 11)
+    ) {
+      currentMonth += increment;
+
+      // AJAX call to update the calendar body
+      const markedDaysKey = `markedDays_${currentYear}_${currentMonth}`;
+      const markedDays = JSON.parse(localStorage.getItem(markedDaysKey)) || [];
+
+      // Simulate an AJAX call (you can replace this with actual AJAX logic)
+      setTimeout(() => {
+        renderCalendar(); // Call to render the calendar
+        highlightMarkedDays(markedDays); // Highlight marked days
+      }, 100); // Simulating network delay
+    }
+  }
+
   // Event listeners for previous and next month buttons
   prevBtn.addEventListener("click", function () {
-    // Allow going back only within the current year
-    if (currentMonth > 0) {
-      currentMonth--;
-      renderCalendar();
-    }
+    updateMonth(-1); // Go to the previous month
   });
 
   nextBtn.addEventListener("click", function () {
-    // Allow going forward only within the current year
-    if (currentMonth < 11) {
-      currentMonth++;
-      renderCalendar();
-    }
+    updateMonth(1); // Go to the next month
   });
 
   const calendarIcon = document.getElementById("calendarIcon");
@@ -195,6 +207,121 @@ document.addEventListener("DOMContentLoaded", function () {
   if (localStorage.getItem("userNote")) {
     noteText.value = localStorage.getItem("userNote");
   }
+
+// Check if it's the user's first visit
+if (!localStorage.getItem("hasVisited")) {
+  // This is the first visit
+  console.log("Welcome to the app! This is your first visit.");
+
+  // Set the flag in local storage
+  localStorage.setItem("hasVisited", "true");
+
+  // Show the guide section
+  document.getElementById("guide").classList.remove("hidden");
+  document.body.insertAdjacentHTML("beforeend", '<div class="overlay"></div>'); // Add overlay
+
+  let currentStep = 0;
+  const steps = [
+    {
+      element: document.querySelector(".monthly_vision_board"), // Highlight the vision board section
+      message: "دي لوحة الرؤية بتاعتك، هنا تقدر تضيف أهدافك الشهرية.",
+    },
+    {
+      element: document.getElementById("editableText"), // Highlight the editable text
+      message: "هنا تقدر تكتب العادة الرئيسية بتاعتك للسنة.اضغط مرتين علشان تعدلها",
+    },
+    {
+      element: document.getElementById("calendarBody"), // Highlight the calendar body
+      message: "هنا تقدر تشوف الأيام اللي علمتها وتحدد الأيام اللي عايز تشتغل عليها.",
+    },
+    {
+      element: document.getElementById("noteIcon"), // Highlight the note icon
+      message: "هنا هتضيف الاسباب. ليه عايز تسمر علي العادة دي ولية مهمة بالنسبة لك",
+    },
+    {
+      element: document.getElementById("notificationIcon"), // Highlight the notification icon
+      message: "هنا هتشوف الإشعارات والتقدم بتاعك.",
+    },
+    {
+      element: document.getElementById("colorPaletteIcon"), // Highlight the color palette icon
+      message: "اضغط هنا عشان تختار الألوان اللي تحبها لتخصيص التطبيق.",
+    },
+    {
+      element: document.getElementById("progressFill"), // Highlight the progress bar
+      message: "هنا هتشوف تقدمك في الأهداف اللي حددتها.",
+    },
+    // Add more steps as needed
+  ];
+
+  function showStep(step) {
+    if (step < steps.length) {
+      const { element, message } = steps[step];
+      element.classList.add("highlight"); // Add a highlight class to the element
+      document.getElementById("message").innerText = message;
+
+      // Position the guide near the highlighted element
+      const rect = element.getBoundingClientRect();
+      const guide = document.getElementById("guide");
+      const guideRect = guide.getBoundingClientRect();
+
+      // Calculate the position of the guide
+      let top = rect.bottom + window.scrollY;
+      let left = rect.left + window.scrollX;
+
+      // Ensure the guide stays within the screen boundaries
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+      // Adjust horizontal position if the guide goes off the screen
+      if (left + guideRect.width > screenWidth) {
+        left = screenWidth - guideRect.width - 10; // Move left to fit
+      }
+      if (left < 0) {
+        left = 10; // Move right to fit
+      }
+
+      // Adjust vertical position if the guide goes off the screen
+      if (top + guideRect.height > screenHeight) {
+        top = rect.top + window.scrollY - guideRect.height - 10; // Move above the element
+      }
+      if (top < 0) {
+        top = 10; // Move down to fit
+      }
+
+      // Apply the adjusted position
+      guide.style.top = `${top}px`;
+      guide.style.left = `${left}px`;
+    } else {
+      // If all steps are finished, stop the guide
+      console.log("Guide finished.");
+      document.getElementById("guide").classList.add("hidden");
+      document.querySelector(".overlay").remove(); // Remove overlay
+      steps.forEach((step) => step.element.classList.remove("highlight")); // Remove highlights
+    }
+  }
+
+  // Start the guide
+  showStep(currentStep);
+
+  // Add event listeners for guide buttons
+  document.getElementById("next").addEventListener("click", function () {
+    const { element } = steps[currentStep];
+    element.classList.remove("highlight"); // Remove highlight from current element
+    currentStep++;
+    showStep(currentStep); // Show the next step
+  });
+
+  document.getElementById("stop").addEventListener("click", function () {
+    // Logic to stop the tour
+    console.log("Tour stopped.");
+    document.getElementById("guide").classList.add("hidden");
+    document.querySelector(".overlay").remove(); // Remove overlay
+    steps.forEach((step) => step.element.classList.remove("highlight")); // Remove highlights
+  });
+} else {
+  // This is not the first visit
+  console.log("Welcome back!");
+}
 });
 // the habit sentence
 const editableText = document.getElementById("editableText");
@@ -448,11 +575,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to update the marked days counter
   function updateMarkedDaysCounter() {
     console.log(`Marked Days: ${markedDays.length}`);
-    // If you have an HTML element to display the count, update it here
-    // Example: document.getElementById("markedDaysCounter").textContent = `Marked Days: ${markedDays.length}`;
   }
 
   // Update the progress bar and marked days counter on page load
@@ -529,3 +653,16 @@ function clearMarkedDays() {
 
 // Call this function to clear marked days when needed
 clearMarkedDays();
+
+function highlightMarkedDays(markedDays) {
+  const days = document.querySelectorAll(".calendar-body .day");
+  days.forEach((day) => {
+    const dayNumber = parseInt(day.textContent, 10);
+    if (markedDays.includes(dayNumber)) {
+      day.classList.add("marked");
+    } else {
+      day.classList.remove("marked");
+    }
+  });
+}
+

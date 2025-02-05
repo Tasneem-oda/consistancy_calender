@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /login/
+Allow: /
+
+Sitemap: https://consistancycalender.netlify.app
+Sitemap: https://consistancycalender.netlify.app/sitemap.xml
+

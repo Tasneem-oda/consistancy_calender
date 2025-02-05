@@ -394,3 +394,37 @@ input {
     text-shadow: 1px 1px 5px #33333365, -1px -1px 5px #0000005c;
   }
 }
+
+/* Dark overlay for the entire page */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); 
+  z-index: 500; 
+  pointer-events: none; 
+}
+
+/* Guide Box */
+#guide {
+  position: absolute;
+  background: white;
+  border: 2px solid black;
+  padding: 15px;
+  z-index: 1002; 
+  max-width: 250px; /* Adjust as needed */
+  max-height: 150px; /* Adjust as needed */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  pointer-events: auto; /* Allow interaction */
+  transition: all 0.3s ease; /* Smooth positioning */
+}
+
+/* Highlighted Elements */
+.highlight {
+  border: 2px solid yellow;
+  position: relative;
+  z-index: 1001;
+}
