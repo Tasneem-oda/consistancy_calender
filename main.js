@@ -236,7 +236,7 @@ if (!localStorage.getItem("hasVisited")) {
     },
     {
       element: document.getElementById("noteIcon"), // Highlight the note icon
-      message: "هنا هتضيف الاسباب. ليه عايز تسمر علي العادة دي ولية مهمة بالنسبة لك",
+      message: "هنا هتضيف الاسباب. ليه عايز تستمر علي العادة دي ولية مهمة بالنسبة لك",
     },
     {
       element: document.getElementById("notificationIcon"), // Highlight the notification icon
