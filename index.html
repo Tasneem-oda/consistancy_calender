@@ -1,237 +1,200 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="تقويم الالتزام لمساعدتك على متابعة عاداتك اليومية وتحقيق أهدافك." />
+    <meta
+      name="description"
+      content="تقويم الالتزام لمساعدتك على متابعة عاداتك اليومية وتحقيق أهدافك."
+    />
     <meta name="keywords" content="تقويم, عادات, أهداف, تنظيم, إنتاجية" />
     <meta name="author" content="مطور البرمجيات" />
-    <title>Consistency Calendar</title>
+    <title>تقويم الالتزام | Consistency Calendar</title>
 
-    <!-- وسوم Open Graph لتحسين مشاركة الروابط على وسائل التواصل -->
     <meta property="og:title" content="تقويم الالتزام - تابع عاداتك اليومية" />
-    <meta property="og:description" content="ساعد نفسك على تحقيق أهدافك اليومية ومتابعة عاداتك مع تقويم الالتزام." />
-    <meta property="og:image" content="https://consistancycalender.netlify.app/photo_2024-12-06_13-56-27.jpg" />
+    <meta
+      property="og:description"
+      content="ساعد نفسك على تحقيق أهدافك اليومية ومتابعة عاداتك مع تقويم الالتزام."
+    />
+    <meta
+      property="og:image"
+      content="https://consistancycalender.netlify.app/photo_2024-12-06_13-56-27.jpg"
+    />
     <meta property="og:url" content="https://consistancycalender.netlify.app" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ar_AR" />
 
-    <!-- وسوم Twitter Card لتحسين مشاركة الروابط على تويتر -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="تقويم الالتزام - راقب عاداتك وحقق أهدافك" />
-    <meta name="twitter:description" content="التزم بعاداتك اليومية بسهولة مع تقويم الالتزام. تابع تقدمك اليوم!" />
-    <meta name="twitter:image" content="https://consistancycalender.netlify.app/photo_2024-12-06_13-56-27.jpg" />
-    <meta name="twitter:site" content="@Tasneem42532994" /> <!-- عدل هذا إذا كان لديك حساب تويتر رسمي -->
+    <meta
+      name="twitter:title"
+      content="تقويم الالتزام - راقب عاداتك وحقق أهدافك"
+    />
+    <meta
+      name="twitter:description"
+      content="التزم بعاداتك اليومية بسهولة مع تقويم الالتزام. تابع تقدمك اليوم!"
+    />
+    <meta
+      name="twitter:image"
+      content="https://consistancycalender.netlify.app/photo_2024-12-06_13-56-27.jpg"
+    />
+    <meta name="twitter:site" content="@Tasneem42532994" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link
+      rel="icon"
+      href="photo_2024-12-06_13-56-27.jpg"
+      sizes="32x32"
+      type="image/png"
+    />
     <link rel="manifest" href="/manifest.json" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <link rel="stylesheet" href="style.css" />
-    <link rel="icon" href="photo_2024-12-06_13-56-27.jpg" sizes="32x32" type="image/png" />
-</head>
 
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-36NJ6BS61F"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-36NJ6BS61F');
-</script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-36NJ6BS61F"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-36NJ6BS61F");
+    </script>
+  </head>
   <body>
-    <section class="monthly_vision_board" id="visionBoard">
-      <!-- Plus signs will be displayed for each month -->
+    <main class="app-container">
+      <section class="monthly-vision-board" id="visionBoard">
+        <div class="image" data-month="January">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="image" data-month="February">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="image" data-month="March"><i class="fas fa-plus"></i></div>
+        <div class="image" data-month="April"><i class="fas fa-plus"></i></div>
+        <div class="image" data-month="May"><i class="fas fa-plus"></i></div>
+        <div class="image" data-month="June"><i class="fas fa-plus"></i></div>
+        <div class="image" data-month="July"><i class="fas fa-plus"></i></div>
+        <div class="image" data-month="August"><i class="fas fa-plus"></i></div>
+        <div class="image" data-month="September">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="image" data-month="October">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="image" data-month="November">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="image" data-month="December">
+          <i class="fas fa-plus"></i>
+        </div>
+      </section>
 
-      <div class="image" data-month="January">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="February">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="March">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="April">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="May">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="June">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="July">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="August">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="September">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="October">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="November">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-      <div class="image" data-month="December">
-        <div>
-          <i class="fas fa-plus" style="cursor: pointer"></i>
-        </div>
-      </div>
-    </section>
-    <section class="middle">
-      <div class="happit">
-        <h1 id="editableText">I will stick to this habit this year</h1>
-        <div id="editControls" style="display: none">
-          <button id="saveBtn">Save</button>
-          <button id="cancelBtn">Cancel</button>
-        </div>
-      </div>
-      <div class="calendar">
-        <div class="header">
-          <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
-          <h2 id="monthYear"></h2>
-          <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
-        </div>
-        <div id="calendarBody" class="calendar-body"></div>
-        <div id="eventInputContainer" class="input-container"></div>
-      </div>
-
-      <div class="progress-bar">
-        <p>hepe you do will</p>
-        <div class="progress">
-          <div class="progress-fill" id="progressFill">
-            <span style="color: aquamarine">()</span>
+      <section class="main-content">
+        <div class="habit-tracker">
+          <h1 id="editableText">سألتزم بهذه العادة هذا العام</h1>
+          <div id="editControls" style="display: none">
+            <button id="saveBtn" class="btn">حفظ</button>
+            <button id="cancelBtn" class="btn btn-secondary">إلغاء</button>
           </div>
         </div>
-      </div>
-    </section>
 
-    <section class="controls">
-      <div>
-        <i class="fas fa-calendar-alt" id="calendarIcon"></i>
-      </div>
-      <div>
-        <i class="fa-solid fa-bag-shopping" id="noteIcon"></i>
-      </div>
-      <div>
-        <i class="fas fa-bell" id="notificationIcon"></i>
-      </div>
-      <div>
-        <a href="use.html"
-          ><i style="color: black" class="fa-solid fa-address-card"></i
+        <div class="calendar-container">
+          <div class="calendar-header">
+            <button id="prevBtn" class="nav-btn">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            <h2 id="monthYear"></h2>
+            <button id="nextBtn" class="nav-btn">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+          </div>
+          <div id="calendarBody" class="calendar-body"></div>
+        </div>
+
+        <div class="progress-container">
+          <p>استمر في التقدم، أنت تقوم بعمل رائع!</p>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill">
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="controls">
+        <button
+          class="control-btn"
+          id="calendarIcon"
+          title="إظهار/إخفاء التقويم"
+        >
+          <i class="fas fa-calendar-alt"></i>
+        </button>
+        <button class="control-btn" id="noteIcon" title="ملاحظاتي">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </button>
+        <button class="control-btn" id="notificationIcon" title="الإشعارات">
+          <i class="fas fa-bell"></i>
+        </button>
+        <a href="use.html" class="control-btn" title="عن التطبيق"
+          ><i class="fa-solid fa-address-card"></i
         ></a>
-      </div>
-      <div style="position: relative">
-        <i class="fas fa-palette" id="colorPaletteIcon"></i>
-        <input
-          type="color"
-          id="colorPicker"
-          style="position: absolute; left: 20px; top: 0; display: none"
-        />
-      </div>
-    </section>
+        <div class="color-picker-wrapper">
+          <button class="control-btn" id="colorPaletteIcon" title="تغيير اللون">
+            <i class="fas fa-palette"></i>
+          </button>
+          <input type="color" id="colorPicker" />
+        </div>
+      </aside>
+    </main>
 
-    <!-- Note Modal -->
-    <div id="noteModal" class="modal">
+    <div id="noteModal" class="modal hidden">
       <div class="modal-content">
-        <span class="close" id="closeNoteModal">&times;</span>
+        <span class="close-btn" id="closeNoteModal">&times;</span>
+        <h3>لماذا هذه العادة مهمة؟</h3>
         <textarea
           id="noteText"
-          placeholder="Write your whys here..."
+          placeholder="اكتب هنا الأسباب التي تدفعك للالتزام..."
         ></textarea>
-        <button id="saveNote">Save</button>
-        <button id="deleteNote">Delete</button>
+        <div class="modal-actions">
+          <button id="saveNote" class="btn">حفظ الملاحظة</button>
+          <button id="deleteNote" class="btn btn-danger">حذف</button>
+        </div>
       </div>
     </div>
 
-    <!-- Notification Modal -->
-    <div id="notificationModal" class="modal">
+    <div id="notificationModal" class="modal hidden">
       <div class="modal-content">
-        <span class="close" id="closeNotification">&times;</span>
+        <span class="close-btn" id="closeNotification">&times;</span>
+        <h3>ملخص التقدم</h3>
         <p id="notificationMessage"></p>
       </div>
     </div>
 
-    <!-- Image Popup Modal -->
-    <div id="imageModal" class="modal">
+    <div id="imageModal" class="modal hidden">
       <div class="modal-content">
-        <span class="close" id="closeImageModal">&times;</span>
-
-        <div class="modal-options">
-          <button id="changeImage">Change Image</button>
-          <button id="deleteImage">Delete Image</button>
+        <span class="close-btn" id="closeImageModal">&times;</span>
+        <h3>خيارات الصورة</h3>
+        <div class="modal-actions">
+          <button id="changeImage" class="btn">تغيير الصورة</button>
+          <button id="deleteImage" class="btn btn-danger">حذف الصورة</button>
         </div>
       </div>
     </div>
-    <!-- Guide Section -->
-    <div id="guide" class="hidden">
-      <div id="highlight"></div>
-      <p id="message"></p>
-      <button id="next">Next</button>
-      <button id="stop">Stop</button>
-    </div>
 
-    <footer id="shareIcon">
-      <ul>
-        <li>
-          <a
-            href="https://www.facebook.com/sharer/sharer.php?u=https://consistancycalender.netlify.app/"
-            target="_blank"
-          >
-            <i class="fab fa-facebook"></i>
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://twitter.com/intent/tweet?url=https://consistancycalender.netlify.app/&text=Check%20out%20this%20tool!"
-            target="_blank"
-          >
-            <i class="fab fa-twitter"></i>
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://www.instagram.com/?url=https://consistancycalender.netlify.app/"
-            target="_blank"
-          >
-            <i class="fab fa-instagram"></i>
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://api.whatsapp.com/send?text=Check%20out%20this%20tool!%20https://consistancycalender.netlify.app/"
-            target="_blank"
-          >
-            <i class="fab fa-whatsapp"></i>
-          </a>
-        </li>
-      </ul>
-    </footer>
+    <div id="guide" class="hidden">
+      <p id="message"></p>
+      <div class="guide-actions">
+        <button id="next" class="btn">التالي</button>
+        <button id="stop" class="btn btn-secondary">إنهاء الجولة</button>
+      </div>
+    </div>
+    <div class="overlay hidden"></div>
 
     <script src="main.js"></script>
   </body>

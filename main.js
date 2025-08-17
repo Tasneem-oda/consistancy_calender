@@ -1,668 +1,416 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // --- DOM Elements ---
   const calendarBody = document.getElementById("calendarBody");
   const monthYear = document.getElementById("monthYear");
   const prevBtn = document.getElementById("prevBtn");
   const nextBtn = document.getElementById("nextBtn");
+  const noteModal = document.getElementById("noteModal");
+  const notificationModal = document.getElementById("notificationModal");
+  const imageModal = document.getElementById("imageModal");
+  const guide = document.getElementById("guide");
+  const overlay = document.querySelector(".overlay");
+
+  // --- State ---
   let currentDate = new Date();
   let currentMonth = currentDate.getMonth();
   let currentYear = currentDate.getFullYear();
-  let selectedDay = null;
 
-  function renderCalendar() {
+  // --- Local Storage Keys ---
+  const MARKED_DAYS_PREFIX = "markedDays_";
+  const HABIT_TEXT_KEY = "habitText";
+  const VISITED_KEY = "hasVisited";
+  const NOTE_KEY = "userNote";
+  const COLOR_KEY = "selectedColor";
+  const IMAGE_PREFIX = "selectedImage_";
+
+  // --- Functions ---
+
+  /**
+   * Renders the calendar for the current month and year.
+   */
+  const renderCalendar = () => {
     calendarBody.innerHTML = "";
-
-    // Set month and year in header
     monthYear.textContent = new Date(
       currentYear,
       currentMonth
-    ).toLocaleDateString("default", {
+    ).toLocaleDateString("ar-EG", {
       month: "long",
       year: "numeric",
     });
 
-    // Get the first day of the month and the total days in the month
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
     const totalDaysInMonth = new Date(
       currentYear,
       currentMonth + 1,
       0
     ).getDate();
+    const markedDays = getMarkedDaysForMonth(currentYear, currentMonth);
 
-    // Fill in the previous month's days if necessary
+    // Add empty cells for days of the previous month
     for (let i = 0; i < firstDayOfMonth; i++) {
-      const dayElement = document.createElement("div");
-      dayElement.classList.add("day");
-      calendarBody.appendChild(dayElement);
+      calendarBody.insertAdjacentHTML("beforeend", '<div class="day"></div>');
     }
 
-    // Fill in the current month's days
+    // Add days of the current month
     for (let i = 1; i <= totalDaysInMonth; i++) {
       const dayElement = document.createElement("div");
       dayElement.classList.add("day");
       dayElement.textContent = i;
 
-      // Highlight today's date
+      const today = new Date();
       if (
-        i === currentDate.getDate() &&
-        currentMonth === currentDate.getMonth() &&
-        currentYear === currentDate.getFullYear()
+        i === today.getDate() &&
+        currentMonth === today.getMonth() &&
+        currentYear === today.getFullYear()
       ) {
         dayElement.classList.add("today");
       }
 
-      dayElement.addEventListener("click", function () {
-        selectDay(this, i);
-      });
+      if (markedDays.includes(i)) {
+        dayElement.classList.add("marked");
+        dayElement.textContent = ""; // Clear number and show checkmark via CSS
+      }
+
+      dayElement.addEventListener("click", () => handleDayClick(dayElement, i));
       calendarBody.appendChild(dayElement);
     }
-  }
+    updateProgressBar();
+  };
 
-  function selectDay(dayElement, day) {
-    if (selectedDay) {
-      selectedDay.classList.remove("selected");
+  /**
+   * Handles click events on a calendar day.
+   * @param {HTMLElement} dayElement - The clicked day element.
+   * @param {number} day - The day number.
+   */
+  const handleDayClick = (dayElement, day) => {
+    const selectedDate = new Date(currentYear, currentMonth, day);
+    if (selectedDate > new Date()) {
+      alert("لا يمكنك تحديد يوم في المستقبل!");
+      return;
     }
-    selectedDay = dayElement;
-    selectedDay.classList.add("selected");
-  }
 
-  renderCalendar();
+    dayElement.classList.toggle("marked");
+    const markedDays = getMarkedDaysForMonth(currentYear, currentMonth);
+    const dayIndex = markedDays.indexOf(day);
 
-  // Function to update the month and render the calendar
-  function updateMonth(increment) {
-    if (
-      (increment < 0 && currentMonth > 0) ||
-      (increment > 0 && currentMonth < 11)
-    ) {
-      currentMonth += increment;
-
-      // AJAX call to update the calendar body
-      const markedDaysKey = `markedDays_${currentYear}_${currentMonth}`;
-      const markedDays = JSON.parse(localStorage.getItem(markedDaysKey)) || [];
-
-      // Simulate an AJAX call (you can replace this with actual AJAX logic)
-      setTimeout(() => {
-        renderCalendar(); // Call to render the calendar
-        highlightMarkedDays(markedDays); // Highlight marked days
-      }, 100); // Simulating network delay
-    }
-  }
-
-  // Event listeners for previous and next month buttons
-  prevBtn.addEventListener("click", function () {
-    updateMonth(-1); // Go to the previous month
-  });
-
-  nextBtn.addEventListener("click", function () {
-    updateMonth(1); // Go to the next month
-  });
-
-  const calendarIcon = document.getElementById("calendarIcon");
-  const noteIcon = document.getElementById("noteIcon");
-  const notificationIcon = document.getElementById("notificationIcon");
-  const noteModal = document.getElementById("noteModal");
-  const notificationModal = document.getElementById("notificationModal");
-  const noteText = document.getElementById("noteText");
-  const saveNote = document.getElementById("saveNote");
-  const deleteNote = document.getElementById("deleteNote");
-  const notificationMessage = document.getElementById("notificationMessage");
-  const closeNoteModal = document.getElementById("closeNoteModal");
-  const closeNotification = document.getElementById("closeNotification");
-  const calendar = document.querySelector(".calendar");
-  // Toggle calendar visibility
-  calendarIcon.addEventListener("click", function () {
-    if (calendar.classList.contains("hidden")) {
-      calendar.classList.remove("hidden");
+    if (dayElement.classList.contains("marked")) {
+      if (dayIndex === -1) markedDays.push(day);
+      dayElement.textContent = "";
     } else {
-      calendar.classList.add("hidden");
-    }
-  });
-
-  // Show note modal
-  noteIcon.addEventListener("click", function () {
-    noteModal.style.display = "block";
-  });
-
-  // Save note
-  saveNote.addEventListener("click", function () {
-    localStorage.setItem("userNote", noteText.value);
-    noteModal.style.display = "none";
-  });
-
-  // Delete note
-  deleteNote.addEventListener("click", function () {
-    localStorage.removeItem("userNote");
-    noteText.value = "";
-    noteModal.style.display = "none";
-  });
-
-  // Show notification modal
-  notificationIcon.addEventListener("click", function () {
-    const newNotification = false; // Replace with actual logic to check for new notifications
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth();
-    let notificationText = "";
-    let hasPreviousMonths = false; // Flag to check if there are previous months
-
-    // Get marked days for the current month
-    const markedDaysKeyCurrentMonth = `markedDays_${currentYear}_${currentMonth}`;
-    const markedDaysCurrentMonth =
-      JSON.parse(localStorage.getItem(markedDaysKeyCurrentMonth)) || [];
-    const daysClickedThisMonth = markedDaysCurrentMonth.length;
-
-    // Loop through the previous months of the current year
-    for (let monthOffset = 0; monthOffset < currentMonth; monthOffset++) {
-      const previousMonth = new Date(currentYear, monthOffset, 1);
-      const month = previousMonth.getMonth();
-      const markedDaysKey = `markedDays_${currentYear}_${month}`;
-      const markedDays = JSON.parse(localStorage.getItem(markedDaysKey)) || [];
-
-      // Calculate the percentage of marked days for the previous month
-      const totalDaysInPreviousMonth = new Date(
-        currentYear,
-        month + 1,
-        0
-      ).getDate();
-      const percentageMarked = (
-        (markedDays.length / totalDaysInPreviousMonth) *
-        100
-      ).toFixed(2);
-
-      // Get the month name
-      const monthName = previousMonth.toLocaleString("default", {
-        month: "long",
-      });
-
-      // Append the information to the notification text if there are marked days
-      if (markedDays.length > 0) {
-        notificationText += `في ${monthName} ${currentYear}، انت علمت ${markedDays.length} يوم. نسبة تقدمك كانت ${percentageMarked}%.<br>`;
-        hasPreviousMonths = true; // Set flag to true if there are marked days
-      }
+      if (dayIndex > -1) markedDays.splice(dayIndex, 1);
+      dayElement.textContent = day;
     }
 
-    if (newNotification) {
-      notificationMessage.textContent = "<b>عندك إشعار جديد<b>";
-    } else {
-      if (hasPreviousMonths) {
-        notificationMessage.innerHTML = notificationText; // Use innerHTML to allow line breaks
-      } else {
-        notificationMessage.textContent =
-          "هنا هتشوف تقدمك في الشهور اللي فاتت.";
-      }
-      // Show the number of days clicked for the current month
-      notificationMessage.innerHTML += `<hr><br>في الشهر الحالي، انت انجزت ${daysClickedThisMonth} ايام.`;
+    saveMarkedDaysForMonth(currentYear, currentMonth, markedDays);
+    updateProgressBar();
+  };
+
+  /**
+   * Updates the calendar to a new month.
+   * @param {number} increment - -1 for previous, 1 for next.
+   */
+  const updateMonth = (increment) => {
+    currentMonth += increment;
+    if (currentMonth < 0) {
+      currentMonth = 11;
+      currentYear--;
+    } else if (currentMonth > 11) {
+      currentMonth = 0;
+      currentYear++;
     }
-    notificationModal.style.display = "block";
-  });
+    renderCalendar();
+  };
 
-  // Close modals
-  closeNoteModal.addEventListener("click", function () {
-    noteModal.style.display = "none";
-  });
+  /**
+   * Updates the progress bar based on marked days.
+   */
+  const updateProgressBar = () => {
+    const progressFill = document.getElementById("progressFill");
+    const progressText = progressFill.querySelector("span");
 
-  closeNotification.addEventListener("click", function () {
-    notificationModal.style.display = "none";
-  });
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const markedDays = getMarkedDaysForMonth(currentYear, currentMonth);
+    const percentage =
+      daysInMonth > 0 ? (markedDays.length / daysInMonth) * 100 : 0;
 
-  // Load saved note on page load
-  if (localStorage.getItem("userNote")) {
-    noteText.value = localStorage.getItem("userNote");
-  }
+    progressFill.style.width = `${percentage.toFixed(2)}%`;
+    progressText.textContent = `${percentage.toFixed(0)}%`;
+  };
 
-// Check if it's the user's first visit
-if (!localStorage.getItem("hasVisited")) {
-  // This is the first visit
-  console.log("Welcome to the app! This is your first visit.");
+  // --- LocalStorage Helper Functions ---
+  const getMarkedDaysForMonth = (year, month) =>
+    JSON.parse(localStorage.getItem(`${MARKED_DAYS_PREFIX}${year}_${month}`)) ||
+    [];
+  const saveMarkedDaysForMonth = (year, month, days) =>
+    localStorage.setItem(
+      `${MARKED_DAYS_PREFIX}${year}_${month}`,
+      JSON.stringify(days)
+    );
+  const getStorageItem = (key, defaultValue = "") =>
+    localStorage.getItem(key) || defaultValue;
+  const setStorageItem = (key, value) => localStorage.setItem(key, value);
+  const removeStorageItem = (key) => localStorage.removeItem(key);
 
-  // Set the flag in local storage
-  localStorage.setItem("hasVisited", "true");
+  // --- Component Initializers ---
 
-  // Show the guide section
-  document.getElementById("guide").classList.remove("hidden");
-  document.body.insertAdjacentHTML("beforeend", '<div class="overlay"></div>'); // Add overlay
+  const initCalendar = () => {
+    renderCalendar();
+    prevBtn.addEventListener("click", () => updateMonth(-1));
+    nextBtn.addEventListener("click", () => updateMonth(1));
+  };
 
-  let currentStep = 0;
-  const steps = [
-    {
-      element: document.querySelector(".monthly_vision_board"), // Highlight the vision board section
-      message: "دي لوحة الرؤية بتاعتك، هنا تقدر تضيف أهدافك الشهرية.",
-    },
-    {
-      element: document.getElementById("editableText"), // Highlight the editable text
-      message: "هنا تقدر تكتب العادة الرئيسية بتاعتك للسنة.اضغط مرتين علشان تعدلها",
-    },
-    {
-      element: document.getElementById("calendarBody"), // Highlight the calendar body
-      message: "هنا تقدر تشوف الأيام اللي علمتها وتحدد الأيام اللي عايز تشتغل عليها.",
-    },
-    {
-      element: document.getElementById("noteIcon"), // Highlight the note icon
-      message: "هنا هتضيف الاسباب. ليه عايز تستمر علي العادة دي ولية مهمة بالنسبة لك",
-    },
-    {
-      element: document.getElementById("notificationIcon"), // Highlight the notification icon
-      message: "هنا هتشوف الإشعارات والتقدم بتاعك.",
-    },
-    {
-      element: document.getElementById("colorPaletteIcon"), // Highlight the color palette icon
-      message: "اضغط هنا عشان تختار الألوان اللي تحبها لتخصيص التطبيق.",
-    },
-    {
-      element: document.getElementById("progressFill"), // Highlight the progress bar
-      message: "هنا هتشوف تقدمك في الأهداف اللي حددتها.",
-    },
-    // Add more steps as needed
-  ];
+  const initHabitTracker = () => {
+    const editableText = document.getElementById("editableText");
+    const editControls = document.getElementById("editControls");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    let originalText = getStorageItem(
+      HABIT_TEXT_KEY,
+      "سألتزم بهذه العادة هذا العام"
+    );
+    editableText.textContent = originalText;
 
-  function showStep(step) {
-    if (step < steps.length) {
-      const { element, message } = steps[step];
-      element.classList.add("highlight"); // Add a highlight class to the element
-      document.getElementById("message").innerText = message;
+    editableText.addEventListener("dblclick", () => {
+      editableText.innerHTML = `<input type="text" id="habitInput" value="${originalText}">`;
+      document.getElementById("habitInput").focus();
+      editControls.style.display = "flex";
+    });
 
-      // Position the guide near the highlighted element
-      const rect = element.getBoundingClientRect();
-      const guide = document.getElementById("guide");
-      const guideRect = guide.getBoundingClientRect();
+    saveBtn.addEventListener("click", () => {
+      const input = document.getElementById("habitInput");
+      originalText = input.value;
+      editableText.textContent = originalText;
+      setStorageItem(HABIT_TEXT_KEY, originalText);
+      editControls.style.display = "none";
+    });
 
-      // Calculate the position of the guide
-      let top = rect.bottom + window.scrollY;
-      let left = rect.left + window.scrollX;
+    cancelBtn.addEventListener("click", () => {
+      editableText.textContent = originalText;
+      editControls.style.display = "none";
+    });
+  };
 
-      // Ensure the guide stays within the screen boundaries
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
-
-      // Adjust horizontal position if the guide goes off the screen
-      if (left + guideRect.width > screenWidth) {
-        left = screenWidth - guideRect.width - 10; // Move left to fit
-      }
-      if (left < 0) {
-        left = 10; // Move right to fit
-      }
-
-      // Adjust vertical position if the guide goes off the screen
-      if (top + guideRect.height > screenHeight) {
-        top = rect.top + window.scrollY - guideRect.height - 10; // Move above the element
-      }
-      if (top < 0) {
-        top = 10; // Move down to fit
-      }
-
-      // Apply the adjusted position
-      guide.style.top = `${top}px`;
-      guide.style.left = `${left}px`;
-    } else {
-      // If all steps are finished, stop the guide
-      console.log("Guide finished.");
-      document.getElementById("guide").classList.add("hidden");
-      document.querySelector(".overlay").remove(); // Remove overlay
-      steps.forEach((step) => step.element.classList.remove("highlight")); // Remove highlights
-    }
-  }
-
-  // Start the guide
-  showStep(currentStep);
-
-  // Add event listeners for guide buttons
-  document.getElementById("next").addEventListener("click", function () {
-    const { element } = steps[currentStep];
-    element.classList.remove("highlight"); // Remove highlight from current element
-    currentStep++;
-    showStep(currentStep); // Show the next step
-  });
-
-  document.getElementById("stop").addEventListener("click", function () {
-    // Logic to stop the tour
-    console.log("Tour stopped.");
-    document.getElementById("guide").classList.add("hidden");
-    document.querySelector(".overlay").remove(); // Remove overlay
-    steps.forEach((step) => step.element.classList.remove("highlight")); // Remove highlights
-  });
-} else {
-  // This is not the first visit
-  console.log("Welcome back!");
-}
-});
-// the habit sentence
-const editableText = document.getElementById("editableText");
-const editControls = document.getElementById("editControls");
-let originalText =
-  localStorage.getItem("habitText") || editableText.textContent;
-
-// Load saved text on page load
-editableText.textContent = originalText;
-
-editableText.addEventListener("dblclick", function () {
-  const input = document.createElement("input");
-  input.type = "text";
-  input.value = originalText;
-  input.id = "textInput";
-  editableText.textContent = "";
-  editableText.appendChild(input);
-  editControls.style.display = "block";
-});
-
-document.getElementById("saveBtn").addEventListener("click", function () {
-  const input = document.getElementById("textInput");
-  originalText = input.value;
-  editableText.textContent = originalText;
-  localStorage.setItem("habitText", originalText);
-  editControls.style.display = "none";
-});
-
-document.getElementById("cancelBtn").addEventListener("click", function () {
-  editableText.textContent = originalText;
-  editControls.style.display = "none";
-});
-//  image popup
-document.addEventListener("DOMContentLoaded", function () {
-  const plusSigns = document.querySelectorAll(".image");
-  const modal = document.getElementById("imageModal");
-  const closeModal = document.getElementById("closeImageModal");
-  let currentImageIndex = null;
-
-  plusSigns.forEach((plus, index) => {
-    const imageKey = `selectedImage_${index}`;
-    const savedImage = localStorage.getItem(imageKey);
-
-    if (savedImage) {
-      plus.style.backgroundImage = `url(${savedImage})`;
-      plus.style.backgroundSize = "cover";
-      const plusIcon = plus.querySelector(".fa-plus");
-      if (plusIcon) {
-        plusIcon.remove();
-      }
-    }
-
-    plus.addEventListener("click", function () {
-      currentImageIndex = index;
-      const currentSavedImage = localStorage.getItem(imageKey);
-
-      if (currentSavedImage) {
-        modal.style.display = "block";
-      } else {
-        selectNewImage(plus, imageKey);
+  const initModals = () => {
+    // General Modal Logic
+    document.querySelectorAll(".modal .close-btn").forEach((btn) => {
+      btn.addEventListener("click", () =>
+        btn.closest(".modal").classList.add("hidden")
+      );
+    });
+    window.addEventListener("click", (event) => {
+      if (event.target.classList.contains("modal")) {
+        event.target.classList.add("hidden");
       }
     });
-  });
 
-  document.getElementById("deleteImage").addEventListener("click", function () {
-    if (currentImageIndex !== null) {
-      const imageKey = `selectedImage_${currentImageIndex}`;
+    // Note Modal
+    const noteIcon = document.getElementById("noteIcon");
+    const noteText = document.getElementById("noteText");
+    const saveNote = document.getElementById("saveNote");
+    const deleteNote = document.getElementById("deleteNote");
+    noteText.value = getStorageItem(NOTE_KEY);
+    noteIcon.addEventListener("click", () =>
+      noteModal.classList.remove("hidden")
+    );
+    saveNote.addEventListener("click", () => {
+      setStorageItem(NOTE_KEY, noteText.value);
+      noteModal.classList.add("hidden");
+    });
+    deleteNote.addEventListener("click", () => {
+      removeStorageItem(NOTE_KEY);
+      noteText.value = "";
+      noteModal.classList.add("hidden");
+    });
+
+    // Notification Modal
+    const notificationIcon = document.getElementById("notificationIcon");
+    const notificationMessage = document.getElementById("notificationMessage");
+    notificationIcon.addEventListener("click", () => {
+      let report = "";
+      for (let i = 0; i < 12; i++) {
+        const days = getMarkedDaysForMonth(currentYear, i);
+        if (days.length > 0) {
+          const monthName = new Date(currentYear, i).toLocaleString("ar-EG", {
+            month: "long",
+          });
+          const totalDays = new Date(currentYear, i + 1, 0).getDate();
+          const percentage = ((days.length / totalDays) * 100).toFixed(1);
+          report += `<li><b>${monthName}:</b> أنجزت ${days.length} يوم (${percentage}%)</li>`;
+        }
+      }
+      notificationMessage.innerHTML = report
+        ? `<ul>${report}</ul>`
+        : "لم يتم تسجيل أي تقدم بعد. ابدأ اليوم!";
+      notificationModal.classList.remove("hidden");
+    });
+  };
+
+  const initVisionBoard = () => {
+    const plusSigns = document.querySelectorAll(".monthly-vision-board .image");
+    let currentImageIndex = null;
+
+    plusSigns.forEach((plus, index) => {
+      const imageKey = `${IMAGE_PREFIX}${index}`;
+      const savedImage = getStorageItem(imageKey);
+      if (savedImage) {
+        plus.style.backgroundImage = `url(${savedImage})`;
+        plus.querySelector("i")?.remove();
+      }
+
+      plus.addEventListener("click", () => {
+        currentImageIndex = index;
+        if (getStorageItem(imageKey)) {
+          imageModal.classList.remove("hidden");
+        } else {
+          selectNewImage(plus, imageKey);
+        }
+      });
+    });
+
+    document.getElementById("deleteImage").addEventListener("click", () => {
+      if (currentImageIndex === null) return;
+      const imageKey = `${IMAGE_PREFIX}${currentImageIndex}`;
       const plus = plusSigns[currentImageIndex];
 
       plus.style.backgroundImage = "";
-      const plusIcon = document.createElement("i");
-      plusIcon.classList.add("fa", "fa-plus");
-      plus.appendChild(plusIcon);
-
-      localStorage.removeItem(imageKey);
-      modal.style.display = "none";
-
-      // Update body background if the deleted image was for the current month
-      if (currentImageIndex === new Date().getMonth()) {
-        document.body.style.backgroundImage = "";
+      if (!plus.querySelector("i")) {
+        plus.innerHTML = '<i class="fas fa-plus"></i>';
       }
-    }
-  });
+      removeStorageItem(imageKey);
+      imageModal.classList.add("hidden");
+    });
 
-  document.getElementById("changeImage").addEventListener("click", function () {
-    if (currentImageIndex !== null) {
-      const imageKey = `selectedImage_${currentImageIndex}`;
+    document.getElementById("changeImage").addEventListener("click", () => {
+      if (currentImageIndex === null) return;
+      const imageKey = `${IMAGE_PREFIX}${currentImageIndex}`;
       const plus = plusSigns[currentImageIndex];
       selectNewImage(plus, imageKey);
-    }
-  });
-
-  closeModal.addEventListener("click", function () {
-    modal.style.display = "none";
-  });
-
-  window.addEventListener("click", function (event) {
-    if (event.target === modal) {
-      modal.style.display = "none";
-    }
-  });
-
-  const currentMonth = new Date().getMonth();
-  const monthImageKey = `selectedImage_${currentMonth}`;
-  const monthImage = localStorage.getItem(monthImageKey);
-
-  if (monthImage) {
-    document.body.style.backgroundImage = `url(${monthImage})`;
-    document.body.style.backgroundSize = "cover";
-  }
-
-  function selectNewImage(plus, imageKey) {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.style.display = "none";
-    document.body.appendChild(input);
-
-    input.addEventListener("change", function () {
-      const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const imageUrl = e.target.result;
-          plus.style.backgroundImage = `url(${imageUrl})`;
-          plus.style.backgroundSize = "cover";
-          localStorage.setItem(imageKey, imageUrl);
-          const plusIcon = plus.querySelector(".fa-plus");
-          if (plusIcon) {
-            plusIcon.remove();
-          }
-
-          // Update body background if the changed image is for the current month
-          if (currentImageIndex === new Date().getMonth()) {
-            document.body.style.backgroundImage = `url(${imageUrl})`;
-            document.body.style.backgroundSize = "cover";
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-      document.body.removeChild(input);
+      imageModal.classList.add("hidden");
     });
 
-    input.click();
-  }
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const colorPaletteIcon = document.getElementById("colorPaletteIcon");
-  const colorPicker = document.getElementById("colorPicker");
-  const elementsToColor = document.querySelectorAll(
-    ".calendar, .progress-bar, h1"
-  );
-
-  // Load saved color from localStorage on page load
-  const savedColor = localStorage.getItem("selectedColor");
-  if (savedColor) {
-    elementsToColor.forEach((element) => {
-      element.style.backgroundColor = savedColor;
-    });
-    colorPicker.value = savedColor; // Set the color picker to the saved color
-  } else {
-    // Apply the default CSS color if no color is saved
-    elementsToColor.forEach((element) => {
-      element.style.backgroundColor = ""; // This will use the CSS default
-    });
-  }
-
-  colorPaletteIcon.addEventListener("click", function (event) {
-    // Show the color picker
-    colorPicker.style.display = "block";
-    colorPicker.focus(); // Focus on the color picker to open it immediately
-    event.stopPropagation(); // Prevent the click from propagating to the document
-  });
-
-  colorPicker.addEventListener("input", function () {
-    const selectedColor = colorPicker.value;
-    elementsToColor.forEach((element) => {
-      element.style.backgroundColor = selectedColor;
-    });
-    // Save the selected color to localStorage
-    localStorage.setItem("selectedColor", selectedColor);
-  });
-
-  // Hide the color picker when clicking anywhere else on the document
-  document.addEventListener("click", function (event) {
-    if (event.target !== colorPicker && event.target !== colorPaletteIcon) {
-      colorPicker.style.display = "none";
-    }
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const days = document.querySelectorAll(".calendar-body .day");
-  const currentDate = new Date();
-  const markedDaysKey = "markedDays";
-  const progressFill = document.getElementById("progressFill");
-  const progressPercentage = document.querySelector(".progress-bar span");
-  const motivationText = document.querySelector(".progress-bar p");
-
-  // Function to get the key for the current month
-  function getMarkedDaysKey() {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    return `markedDays_${year}_${month}`;
-  }
-
-  // Function to load marked days for the current month
-  function loadMarkedDays() {
-    const markedDaysKey = getMarkedDaysKey();
-    return JSON.parse(localStorage.getItem(markedDaysKey)) || [];
-  }
-
-  // Function to save marked days for the current month
-  function saveMarkedDays(markedDays) {
-    const markedDaysKey = getMarkedDaysKey();
-    localStorage.setItem(markedDaysKey, JSON.stringify(markedDays));
-  }
-
-  // Load marked days from localStorage on page load
-  let markedDays = loadMarkedDays();
-
-  // Function to update the progress bar based on the percentage of marked days relative to days passed
-  function updateProgressBar() {
-    const firstDayOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1
-    );
-    const daysPassed =
-      Math.floor((currentDate - firstDayOfMonth) / (1000 * 60 * 60 * 24)) + 1; // Include today
-    const percentageMarked = ((markedDays.length / daysPassed) * 100).toFixed(
-      2
-    );
-
-    // Update the width of the progress bar
-    progressFill.style.width = `${percentageMarked}%`;
-
-    // Update the percentage text in the span
-    progressPercentage.textContent = `${percentageMarked}%`;
-
-    // Update the motivation text based on the percentage
-    if (percentageMarked > 80) {
-      motivationText.textContent = "جامد جدًا. كمل كده";
-    } else if (percentageMarked > 50) {
-      motivationText.textContent = "شغل حلو. شد حيلك شوية";
-    } else if (percentageMarked > 30) {
-      motivationText.textContent = "مش بطال، شد حيلك وهتوصل";
-    } else {
-      motivationText.textContent = "مفيش مشكلة، البداية دايمًا صعبة. جرب تاني";
-    }
-  }
-
-  function updateMarkedDaysCounter() {
-    console.log(`Marked Days: ${markedDays.length}`);
-  }
-
-  // Update the progress bar and marked days counter on page load
-  updateProgressBar();
-  updateMarkedDaysCounter();
-
-  // Mark the days that were previously saved
-  days.forEach((day) => {
-    const dayNumber = parseInt(day.textContent, 10);
-    if (markedDays.includes(dayNumber)) {
-      day.classList.add("marked");
-    }
-  });
-  days.forEach((day) => {
-    day.addEventListener("click", function () {
-      const dayNumber = parseInt(this.textContent, 10);
-      const selectedDate = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        dayNumber
-      );
-
-      // Check if the dayNumber is null or invalid
-      if (dayNumber === null || isNaN(dayNumber)) {
-        alert("ده مش يوم تبع الشهر");
-        return; // Exit the function if the day is null
-      }
-
-      if (selectedDate > currentDate) {
-        alert("عملتها ازاي في المستقبل لسة اليوم ما جاش");
-      } else {
-        this.classList.toggle("marked");
-
-        // Update marked days in the array
-        if (this.classList.contains("marked")) {
-          markedDays.push(dayNumber);
-        } else {
-          const index = markedDays.indexOf(dayNumber);
-          if (index > -1) {
-            markedDays.splice(index, 1);
-          }
+    const selectNewImage = (plus, imageKey) => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = () => {
+        const file = input.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imageUrl = e.target.result;
+            plus.style.backgroundImage = `url(${imageUrl})`;
+            plus.querySelector("i")?.remove();
+            setStorageItem(imageKey, imageUrl);
+          };
+          reader.readAsDataURL(file);
         }
-        // Save the updated marked days to localStorage
-        saveMarkedDays(markedDays);
+      };
+      input.click();
+    };
+  };
 
-        // Update the marked days counter and progress bar whenever a day is marked/unmarked
-        updateMarkedDaysCounter();
-        updateProgressBar();
-      }
+  const initColorPicker = () => {
+    const colorPicker = document.getElementById("colorPicker");
+    const savedColor = getStorageItem(COLOR_KEY);
+
+    const applyColor = (color) => {
+      document.documentElement.style.setProperty("--primary-color", color);
+      document.documentElement.style.setProperty(
+        "--secondary-color",
+        color + "aa"
+      ); // semi-transparent
+    };
+
+    if (savedColor) {
+      applyColor(savedColor);
+      colorPicker.value = savedColor;
+    }
+
+    colorPicker.addEventListener("input", (event) => {
+      const newColor = event.target.value;
+      applyColor(newColor);
+      setStorageItem(COLOR_KEY, newColor);
     });
-  });
+  };
+
+  const initFirstVisitGuide = () => {
+    if (getStorageItem(VISITED_KEY)) return;
+
+    guide.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+
+    const steps = [
+      {
+        element: ".habit-tracker",
+        message: "هنا يمكنك تعديل عادتك السنوية بالنقر المزدوج.",
+      },
+      {
+        element: ".calendar-container",
+        message: "هذا هو التقويم. انقر على الأيام لتسجيل إنجازك.",
+      },
+      {
+        element: ".monthly-vision-board",
+        message: "أضف صورًا ملهمة لكل شهر لتكون لوحة رؤيتك.",
+      },
+      {
+        element: ".controls",
+        message:
+          "استخدم هذه الأزرار للوصول السريع للملاحظات والإشعارات والإعدادات.",
+      },
+    ];
+    let currentStep = 0;
+
+    const showStep = () => {
+      steps.forEach((s) =>
+        document.querySelector(s.element)?.classList.remove("highlight")
+      );
+      if (currentStep >= steps.length) {
+        endGuide();
+        return;
+      }
+
+      const { element, message } = steps[currentStep];
+      document.querySelector(element)?.classList.add("highlight");
+      document.getElementById("message").textContent = message;
+    };
+
+    const endGuide = () => {
+      guide.classList.add("hidden");
+      overlay.classList.add("hidden");
+      steps.forEach((s) =>
+        document.querySelector(s.element)?.classList.remove("highlight")
+      );
+      setStorageItem(VISITED_KEY, "true");
+    };
+
+    document.getElementById("next").addEventListener("click", () => {
+      currentStep++;
+      showStep();
+    });
+    document.getElementById("stop").addEventListener("click", endGuide);
+
+    showStep();
+  };
+
+  // --- App Initialization ---
+  initCalendar();
+  initHabitTracker();
+  initModals();
+  initVisionBoard();
+  initColorPicker();
+  initFirstVisitGuide();
 });
 
+// --- Service Worker Registration ---
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/service-worker.js")
-      .then((registration) => {
-        console.log(
-          "Service Worker registered with scope:",
-          registration.scope
-        );
-      })
-      .catch((error) => {
-        console.error("Service Worker registration failed:", error);
-      });
+      .then((registration) =>
+        console.log("Service Worker registered.", registration)
+      )
+      .catch((error) =>
+        console.error("Service Worker registration failed:", error)
+      );
   });
 }
-
-// Function to clear marked days from localStorage
-function clearMarkedDays() {
-  localStorage.removeItem("markedDays");
-}
-
-// Call this function to clear marked days when needed
-clearMarkedDays();
-
-function highlightMarkedDays(markedDays) {
-  const days = document.querySelectorAll(".calendar-body .day");
-  days.forEach((day) => {
-    const dayNumber = parseInt(day.textContent, 10);
-    if (markedDays.includes(dayNumber)) {
-      day.classList.add("marked");
-    } else {
-      day.classList.remove("marked");
-    }
-  });
-}
-

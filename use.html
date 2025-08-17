@@ -1,67 +1,127 @@
 <!DOCTYPE html>
-<html lang="ar">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>عن التطبيق</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap');
-    body {
-      font-family:cairo;
-      background-color: #f9f9f9;
-      color: #333;
-      padding: 20px;
-      line-height: 1.6;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      
-    }
-    h1 {
-      text-align: center;
-      color: #333333;
-      
-    }
-    p {
-        font-size: 18px;
-      margin-bottom: 15px;
-      direction: rtl;
-    }
-    img{
-      width:100px;
-      height:100px;
-    }
-  </style>
-</head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-36NJ6BS61F"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>عن التطبيق</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .use-container {
+        max-width: 800px;
+        margin: 40px auto;
+        background-color: var(--surface-color);
+        padding: 40px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+      }
 
-  gtag('config', 'G-36NJ6BS61F');
-</script>
-<body>
-  <div class="container">
-    <h1>عن التطبيق</h1>
-    <p>تطبيقنا ده معمول عشان يساعدك ترتب يومك وتتابع عاداتك بشكل سهل وبسيط. يعني تقدر تعرف إنت عملت إيه وكملت إيه من أهدافك يوم بيوم.</p>
-    <p>تقدر تعلم على الأيام اللي أنجزت فيها، وتكتب ملاحظات عشان تفتكر حاجات مهمة. وكمان هتوصلك إشعارات تذكرك بتقدمك وتفكرك بإنجازاتك.</p>
-    <p>لو أول مرة تستخدم التطبيق، هيظهرلك دليل صغير يعرفك إزاي تستخدمه عشان الدنيا تبقى واضحة وسهلة عليك.</p>
-    <p>جربه، وهتلاقيه بيخليك تحس بالإنجاز كل يوم</p>
-    <p>علشان تنزل التطبيق وتفتحه بسهولة من شاشة الموبايل </p>
-    <p>اول حاجة افتح التطبيق<img src="images/open.PNG" alt=""></p>
-    <p>بعدها اضغط علي الثلاث نقاط دول <img src="images/three.PNG" alt=""></p>
-    <p>اضغط علي الخيار ده<img src="images/add.PNG" alt=""></p>
-    <p>اضغط تثبيت<img src="images/install.PNG" alt=""></p>
-    <p>كدة التطبيق اتثبت وهيظهر علي الشاشة الرئيسئة <img src="images/done.PNG" alt=""></p>
-  </div>
-  
-</body>
+      .use-container h1 {
+        text-align: center;
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        font-size: 2.5rem;
+      }
+
+      .use-container p {
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        line-height: 1.8;
+        margin-bottom: 20px;
+      }
+
+      .image-step {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin: 20px 0;
+        padding: 15px;
+        background-color: var(--background-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .image-step img {
+        /* width: 80px; */
+        height: 80px;
+        object-fit: contain;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: white;
+        flex-shrink: 0;
+      }
+
+      .image-step p {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      .back-btn {
+        display: block;
+        width: fit-content;
+        margin: 30px auto 0;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        .use-container {
+          margin: 20px;
+          padding: 20px;
+        }
+        .use-container h1 {
+          font-size: 2rem;
+        }
+        .use-container p {
+          font-size: 1rem;
+        }
+        .image-step {
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: right;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="use-container">
+      <h1>عن التطبيق</h1>
+      <p>
+        تطبيقنا مصمم لمساعدتك على تنظيم يومك وتتبع عاداتك بشكل سهل وفعال. يمكنك
+        متابعة إنجازاتك وأهدافك يومًا بيوم.
+      </p>
+      <p>
+        يمكنك تحديد الأيام التي أنجزت فيها مهامك، وإضافة ملاحظات لتذكيرك
+        بالأشياء المهمة. كما ستصلك إشعارات تحفيزية لتشجيعك على الاستمرار.
+      </p>
+      <p>
+        إذا كانت هذه هي المرة الأولى التي تستخدم فيها التطبيق، سيظهر لك دليل
+        إرشادي لتسهيل عملية البدء.
+      </p>
+
+      <h2>كيفية تثبيت التطبيق على الشاشة الرئيسية</h2>
+      <div class="image-step">
+        <p>1. افتح التطبيق من متصفحك.</p>
+        <img src="images/open.PNG" alt="خطوة رقم 1" />
+      </div>
+      <div class="image-step">
+        <p>2. اضغط على أيقونة الثلاث نقاط في المتصفح.</p>
+        <img src="images/three.PNG" alt="خطوة رقم 2" />
+      </div>
+      <div class="image-step">
+        <p>3. اختر خيار "إضافة إلى الشاشة الرئيسية".</p>
+        <img src="images/add.PNG" alt="خطوة رقم 3" />
+      </div>
+      <div class="image-step">
+        <p>4. اضغط على "تثبيت".</p>
+        <img src="images/install.PNG" alt="خطوة رقم 4" />
+      </div>
+      <div class="image-step">
+        <p>5. تم تثبيت التطبيق بنجاح وسيظهر على شاشتك الرئيسية.</p>
+        <img src="images/done.PNG" alt="خطوة رقم 5" />
+      </div>
+
+      <a href="index.html" class="btn back-btn">العودة إلى التطبيق</a>
+    </div>
+  </body>
 </html>
-
